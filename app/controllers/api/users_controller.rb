@@ -4,7 +4,6 @@ module Api
     end
 
     def create
-      byebug
     end
   end
 end

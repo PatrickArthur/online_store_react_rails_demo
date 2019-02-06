@@ -6,7 +6,8 @@ class UsersNew extends React.Component {
     this.state = {
       password: "",
       company_name: "",
-      type: ""
+      type: "",
+      error: []
     };
   }
 
@@ -18,15 +19,65 @@ class UsersNew extends React.Component {
 
 
   signupUser = (e) => {
-    var form = {
-                "password" : $("#signup-form input[type=text]")[0].value,
-                "type" : $("#signup-form input[type=radio]")[0].value,
-                "company_name" : $("#signup-form input[type=text]")[1].value
-               }
-    fetch("/api/users", {
-      method: "POST",
-      body: form
-    });
+    var password = $("#signup-form input[type=text]")[0].value
+    var type_radio = $("#signup-form input[type=radio]")
+
+    if (password.length == 0 && !type_radio[0].checked && !type_radio[1].checked) {
+      alert("Missing Password, must select buyer or seller")
+    } else if (type_radio[0].checked) {
+      var company_name = $("#signup-form input[type=text]")[1].value
+      if (company_name.length == 0) {
+        alert("missing company name")
+      }
+    } else {
+
+      var data = new FormData();
+      var form = {}
+
+      if (company_name != '') {
+        form["password"] = password
+        form["type"] = type_radio[1].checked
+        form["company_name"] = ""
+      } else {
+        form["password"] = password
+        form["type"] = type_radio[0].checked
+        form["company_name"] = company_name
+      }
+
+      data.append("sign_up", JSON.stringify(form));
+
+      fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify(form)
+      });
+    }
+  }
+
+  signupUser = (e) => {
+    var password = $("#signup-form input[type=text]")[0].value
+    var type_radio = $("#signup-form input[type=radio]")
+
+    if (password.length == 0 && !type_radio[0].checked && !type_radio[1].checked) {
+      alert("Missing Password, must select buyer or seller")
+    } else if (type_radio[0].checked) {
+      var company_name = $("#signup-form input[type=text]")[1].value
+      if (company_name.length == 0) {
+        alert("missing company name")
+      }
+    } else {
+      var data = new FormData();
+      var form = {}
+      var output = $("#signup-form input").serializeArray().map(function(x){form[x.name] = x.value;})
+
+      fetch("/api/users", {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: output
+      });
+    }
   }
 
   render() {
